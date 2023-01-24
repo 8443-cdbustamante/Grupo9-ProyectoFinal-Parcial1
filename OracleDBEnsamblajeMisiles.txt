@@ -1,0 +1,139 @@
+create table tb_proveedor(
+"var_id_pro"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_nombre_pro"       VARCHAR2(75) NOT NULL,
+"var_tipo_pro"         VARCHAR2(75) NOT NULL,
+"var_email_pro"        VARCHAR2(75) NOT NULL,
+"var_telefono_pro"     VARCHAR2(75) NOT NULL,
+"var_descripcion_pro"  VARCHAR2(75) NOT NULL,
+"var_status_pro"       VARCHAR2(75) NOT NULL
+);
+
+create table tb_pieza(
+"var_id_pieza"         VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_nombre_pieza"     VARCHAR2(75) NOT NULL,
+"var_tipo_pieza"       VARCHAR2(75) NOT NULL,
+"nbr_cantidad_pieza"   NUMBER NOT NULL,
+"dt_fecha_fac_pieza"  DATE NOT NULL
+);
+
+create table tb_componente(
+"var_id_com"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_nombre_com"       VARCHAR2(75) NOT NULL,
+"var_tipo_com"         VARCHAR2(75) NOT NULL
+);
+
+create table tb_rol(
+"var_id_rol"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_nombre_rol"       VARCHAR2(75) NOT NULL,
+"dt_fecha_asigna_rol" DATE NOT NULL,
+"var_status_rol"       VARCHAR2(75) NOT NULL
+);
+
+create table tb_permiso(
+"var_id_perm"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_entidad_perm"      VARCHAR2(75) NOT NULL,
+"var_tipo_perm"         VARCHAR2(75) NOT NULL,
+"dt_fecha_asigna_perm" DATE NOT NULL,
+"dt_fecha_caduca_perm" DATE NOT NULL,
+"var_status_perm"       VARCHAR2(75) NOT NULL
+);
+
+create table tb_misil(
+"var_id_mis"            VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_nombre_mis"        VARCHAR2(75) NOT NULL,
+"var_tipo_mis"          VARCHAR2(75) NOT NULL,
+"dt_fecha_entrega_mis" DATE NOT NULL,
+"var_status_mis"        VARCHAR2(75) NOT NULL
+);
+
+create table tb_parametro(
+"var_id_par"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_descripcion_par"  VARCHAR2(75) NOT NULL,
+"var_decreto_par"      VARCHAR2(75) NOT NULL,
+"var_status_par"       VARCHAR2(75) NOT NULL
+);
+
+create table tb_departamento(
+"var_id_dept"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_nombre_dept"       VARCHAR2(75) NOT NULL,
+"var_tipo_dept"         VARCHAR2(75) NOT NULL,
+"var_descripcion_dept"  VARCHAR2(75) NOT NULL
+);
+
+create table tb_personal(
+"var_id_per"            VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_genero_per"        VARCHAR2(75) NOT NULL,
+"var_nombre_per"        VARCHAR2(75) NOT NULL,
+"var_email_per"         VARCHAR2(75) NOT NULL,
+"dt_fecha_nac_per"     DATE NOT NULL,
+"var_id_dept"           VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_dept") REFERENCES tb_departamento ("var_id_dept")
+);
+
+create table tb_ingeniero(
+"var_id_per"           VARCHAR2(75) PRIMARY KEY NOT NULL,
+"var_especialidad_ing" VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_per" ) REFERENCES tb_personal ("var_id_per" )
+);
+
+create table tb_tecnico(
+"var_id_per"            VARCHAR2(75) PRIMARY KEY NOT NULL,
+"nbr_horas_experiencia" NUMBER NOT NULL,
+FOREIGN KEY ("var_id_per") REFERENCES tb_personal ("var_id_per")
+);
+
+create table tb_administrador(
+"var_id_per"            VARCHAR2(75) PRIMARY KEY NOT NULL,
+"nbr_num_proyectos_realizados" NUMBER NOT NULL,
+FOREIGN KEY ("var_id_per") REFERENCES tb_personal ("var_id_per")
+);
+
+create table tb_cumplir(
+"var_nota"             VARCHAR2(75) NOT NULL,
+"var_id_mis"           VARCHAR2(75) NOT NULL,
+"var_id_par"           VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_mis") REFERENCES tb_misil ("var_id_mis"),
+FOREIGN KEY ("var_id_par") REFERENCES tb_parametro ("var_id_par"),
+PRIMARY KEY ("var_id_mis", "var_id_par")
+);
+
+create table tb_abastecer(
+"dt_fecha_compra"      DATE NOT NULL,
+"var_id_pieza"         VARCHAR2(75) NOT NULL,
+"var_id_pro"           VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_pieza") REFERENCES tb_pieza ("var_id_pieza"),
+FOREIGN KEY ("var_id_pro") REFERENCES tb_proveedor ("var_id_pro"),
+PRIMARY KEY ("var_id_pieza", "var_id_pro")
+);
+
+create table tb_integrar(
+"nbr_cantidad_necesaria" NUMBER NOT NULL,
+"var_id_com"             VARCHAR2(75) NOT NULL,
+"var_id_pieza"           VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_com") REFERENCES tb_componente ("var_id_com"),
+FOREIGN KEY ("var_id_pieza") REFERENCES tb_pieza ("var_id_pieza"),
+PRIMARY KEY ("var_id_com", "var_id_pieza")
+);
+
+create table tb_configurar(
+"var_descripcion_conf"  VARCHAR2(75) NOT NULL,
+"var_id_perm"           VARCHAR2(75) NOT NULL,
+"var_id_rol"            VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_perm") REFERENCES tb_permiso ("var_id_perm"),
+FOREIGN KEY ("var_id_rol") REFERENCES tb_rol ("var_id_rol"),
+PRIMARY KEY ("var_id_perm", "var_id_rol")
+);
+
+create table tb_ensamblar(
+"dt_fecha_ensamblar" DATE NOT NULL,
+"var_id_rol"          VARCHAR2(75) NOT NULL,
+"var_id_per"          VARCHAR2(75) NOT NULL,
+"var_id_mis"          VARCHAR2(75) NOT NULL,
+"var_id_com"          VARCHAR2(75) NOT NULL,
+FOREIGN KEY ("var_id_rol") REFERENCES tb_rol ("var_id_rol"),
+FOREIGN KEY ("var_id_per") REFERENCES tb_personal ("var_id_per"),
+FOREIGN KEY ("var_id_mis") REFERENCES tb_misil ("var_id_mis"),
+FOREIGN KEY ("var_id_com") REFERENCES tb_componente ("var_id_com" ),
+PRIMARY KEY ("var_id_rol", "var_id_per", "var_id_mis", "var_id_com" )
+);
+

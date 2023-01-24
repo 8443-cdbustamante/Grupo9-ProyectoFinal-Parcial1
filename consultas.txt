@@ -1,0 +1,88 @@
+*/consulta 1*/
+
+/*Consulta 1: Determinar la cantidad de misiles segun su nombre y proveedor*/
+
+select mis."var_nombre_mis" as MISIL, prov."var_tipo_pro" as TIPO_PROVEEDOR, count(*) as CANTIDAD from tb_abastecer abas
+inner join tb_proveedor prov on prov."var_id_pro" = abas."var_id_pro"
+inner join tb_pieza pz on pz."var_id_pieza" = abas."var_id_pieza"
+inner join tb_integrar itg on pz."var_id_pieza" = itg."var_id_pieza"
+inner join tb_componente comp on comp."var_id_com" = itg."var_id_com"
+inner join tb_ensamblar ens on comp."var_id_com" = ens."var_id_com"
+inner join tb_misil mis on mis."var_id_mis" = ens."var_id_mis";
+group by mis.nombre_mis, prov.tipo_pro;
+
+*/consulta 2*/
+
+/*Consulta 2: listar la entidades de permisos, con sus cantidades, que en 
+su configuración de roles tengan el estado inactivo en más de 50 registros*/
+
+select perm."var_entidad_perm" from tb_configurar conf
+inner join tb_permiso perm on perm."var_id_perm" = conf."var_id_perm"
+inner join tb_rol rl on rl."var_id_rol" = conf."var_id_rol"
+where "var_status_rol" = 'Inactivo'
+group by perm."var_entidad_perm"
+having count(perm."var_entidad_perm")>50;
+
+
+*/consulta 3*/
+
+/*Consulta 3: Determinar la cantidad de decretos en estado activo que tienen cada tipo de misil */
+
+select mis."var_tipo_mis", pr."var_decreto_par", count(pr."var_decreto_par") from tb_cumplir cump
+inner join tb_misil mis on mis."var_id_mis" = cump."var_id_mis"
+inner join tb_parametro pr on pr."var_id_par" = cump."var_id_par"
+where pr."var_status_par" like 'Activo'
+group by mis."var_tipo_mis", pr."var_decreto_par";
+
+
+*/consulta 4*/
+
+/*Consulta 4: Determinar la cantidad de decretos que tienen cada tipo de misil */
+
+select comp."var_id_com", comp."var_nombre_com", pz."var_nombre_pieza", itg."nbr_cantidad_necesaria" from tb_integrar itg
+inner join tb_componente comp on comp."var_id_com" = itg."var_id_com"
+inner join tb_pieza pz on pz."var_id_pieza" = itg."var_id_pieza"
+where pz."var_nombre_pieza" like 'Sensor-C' 
+group by comp."var_nombre_com";
+
+
+*/consulta 5*/
+
+/*Consulta 5: Imprima la cantidad de personas que pertenecen al departamento
+ de propulsion que estan asignado al ensamblaje de misiles el mes de 
+diciembre, adjunte el mes como etiqueta en la impresión*/
+
+select ing."var_especialidad_ing"  as ESPECIALIDAD, count(mis."var_id_mis") AS NUMERO from tb_personal pers
+inner join tb_ingeniero ing on pers."var_id_per" = ing."var_id_per"
+inner join tb_ensamblar ens on pers."var_id_per" = ens."var_id_per"
+inner join tb_misil mis on mis."var_id_mis" = ens."var_id_mis"
+where mis."var_status_mis" like 'Listo' AND pers."var_genero_per" like 'female'
+group by ing."var_especialidad_ing", mis."var_tipo_mis";
+
+
+*/consulta 6*/
+
+/*Consulta 6: Liste por especialidad de ingenieria la cantidad de 
+personal femenino que estan asignados a misiles en status listo*/
+
+select count(mis."var_id_mis") as NUMERO_MISILES, sum(tec."nbr_horas_experiencia") as TOTAL, avg(tec."nbr_horas_experiencia") as PROMEDIO from tb_personal pers
+inner join tb_tecnico tec on pers."var_id_per" = tec."var_id_per"
+inner join tb_ensamblar ens on pers."var_id_per" = ens."var_id_per"
+inner join tb_misil mis on mis."var_id_mis" = ens."var_id_mis"
+where mis."var_nombre_mis" like '%A' or mis."var_nombre_mis" like '%C';
+
+*/consulta 7*/
+select count(mis."var_id_mis") as NUMERO_MISILES, sum(adm."nbr_num_proyectos_realizados") as TOTAL, avg(adm."nbr_num_proyectos_realizados") as PROMEDIO from tb_personal pers
+inner join tb_administrador adm on pers."var_id_per" = adm."var_id_per"
+inner join tb_ensamblar ens on pers."var_id_per" = ens."var_id_per"
+inner join tb_misil mis on mis."var_id_mis" = ens."var_id_mis"
+where mis."var_tipo_mis" like 'Nuclear';
+
+*/consulta 8*/
+select perm."var_id_perm" as ID_PERMISO, on_date(perm."dt_fecha_caduca_perm") as CADUCA_PERMISO, rl."var_nombre_rol" as NOMBRE_ROL, per."var_nombre_per" as PERSONAL, dp."var_nombre_dept" as DEPARTAMENTO from tb_departamento dp
+inner join tb_personal per on dp."var_id_dept" = per."var_id_dept"
+inner join tb_ensamblar ens on per."var_id_per" = ens."var_id_per"
+inner join tb_rol rl on rl."var_id_rol" = ens."var_id_rol"
+inner join tb_configurar conf on rl."var_id_rol" = conf."var_id_rol"
+inner join tb_permiso perm on perm."var_id_perm" = conf."var_id_perm"
+where rl."var_nombre_rol" like 'Analista';
